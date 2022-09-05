@@ -2,26 +2,75 @@
 use rand::{Rng, rngs::ThreadRng, thread_rng};
 
 pub struct Gaussian {
-    mean: f64,
-    variance: f64,
+    mean: f32,
+    variance: f32,
+    std: f32,
     random_number_generator: ThreadRng
 }
 
 impl Gaussian {
-    pub fn new(mean: f64, variance: f64) -> Gaussian {
-        Gaussian { mean: mean, variance: variance, random_number_generator: thread_rng() }
+    pub fn new(mean: f32, variance: f32) -> Gaussian {
+        Gaussian { mean: mean, variance: variance, std: f32::sqrt(variance), random_number_generator: thread_rng() }
     }
 
-    pub fn info(&self) -> String {
-        format!("Gaussian distribution with mean of {} and variance of {}.", self.mean, self.variance)
+    fn box_muller(&mut self) -> Vec<f32> {
+        let x_1: f32 = self.random_number_generator.gen::<f32>();
+        let x_2: f32 = self.random_number_generator.gen::<f32>();
+
+        let mut g: Vec<f32> = Vec::new();
+        
+        let y: f32 = f32::sqrt(-2. * f32::ln(x_1)) * f32::cos(2. * std::f32::consts::PI * x_2);
+
+        g.push(self.mean + self.std * y);
+        g
     }
 
-    pub fn sample(&mut self) -> f64 {
-        self.random_number_generator.gen::<f64>()
+    pub fn samples(&mut self, n: u32) -> Vec<f32> {
+        let mut numbers: Vec<f32> = Vec::new();
+
+        for _ in 0..n {
+            numbers.append(&mut self.box_muller());
+        }
+
+        numbers
+    }
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn gaussian_mean_and_var() {
+        let mut rng = thread_rng();
+        let n: u32 = 10000;
+        for _ in 0..10 {
+            let random_mean: f32 = 5. * rng.gen::<f32>();
+            let random_variance: f32 = 5. * rng.gen::<f32>();
+            let mut g: Gaussian = Gaussian::new(random_mean, random_variance);
+            let s: Vec<f32> = g.samples(n);
+
+            assert!(mean(&s) <= random_mean * 1.1);
+            assert!(mean(&s) >= random_mean * 0.9);
+            assert!(variance(&s) <= random_variance * 1.1);
+            assert!(variance(&s) >= random_variance * 0.9);
+            assert!(s.len() as u32 == n);
+        }
     }
 
-    pub fn pdf(&self, x: f64) -> f64 {
-        1./f64::sqrt(2.* std::f64::consts::PI * self.variance) * 
-        f64::exp(-f64::powi(x - self.mean, 2) / (2. * self.variance))
+    fn mean(numbers: &Vec<f32>) -> f32 {
+        let sum: f32 = numbers.iter().sum();
+        sum / numbers.len() as f32
+    }
+
+    fn variance(numbers: &Vec<f32>) -> f32 {
+        let m: f32 = mean(numbers);
+        let mut v: Vec<f32> = Vec::new();
+        for number in numbers {
+            v.push(f32::powi(number - m, 2));
+        }
+
+        v.iter().sum::<f32>() / (v.len() - 1) as f32
     }
 }
