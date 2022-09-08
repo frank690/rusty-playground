@@ -1,5 +1,40 @@
 // This file contains math functions regarding vectors that are commonly used across this project
 
+pub struct Vector2D {
+    values: Vec<f32>,
+    shape: [u32; 2]
+}
+
+impl Vector2D {
+    pub fn new(values: Vec<f32>, shape: [u32; 2]) -> Vector2D {
+        Vector2D { values: values, shape: shape }
+    }
+}
+
+impl std::ops::Mul<f32> for Vector2D {
+    type Output = Vector2D;
+
+    fn mul(self, _rhs: f32) -> Vector2D {
+        let mut new_values: Vec<f32> = vec![];
+        for value in self.values {
+            new_values.push(value * _rhs);
+        }
+        Vector2D::new(new_values, self.shape)
+    }
+}
+
+impl std::ops::Mul<Vector2D> for f32 {
+    type Output = Vector2D;
+
+    fn mul(self, rhs: Vector2D) -> Vector2D {
+        let mut new_values: Vec<f32> = vec![];
+        for value in rhs.values {
+            new_values.push(value * self);
+        }
+        Vector2D::new(new_values, rhs.shape)
+    }
+}
+
 pub fn scalar_multiply(v: &Vec<f32>, s: &f32) -> Vec<f32> {
     let mut r: Vec<f32> = vec![];
     for e in v {
