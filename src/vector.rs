@@ -1,7 +1,5 @@
 // This file contains math functions regarding vectors that are commonly used across this project
 
-use std::f64::INFINITY;
-
 pub fn scalar_multiply(v: &Vec<f32>, s: &f32) -> Vec<f32> {
     let mut r: Vec<f32> = vec![];
     for e in v {
