@@ -44,17 +44,17 @@ mod tests {
     #[test]
     fn gaussian_mean_and_var() {
         let mut rng = thread_rng();
-        let n: u32 = 10000;
+        let n: u32 = 100000;
         for _ in 0..10 {
             let random_mean: f32 = 5. * rng.gen::<f32>();
             let random_variance: f32 = 5. * rng.gen::<f32>();
             let mut g: Gaussian = Gaussian::new(random_mean, random_variance);
             let s: Vec<f32> = g.samples(n);
 
-            assert!(mean(&s) <= random_mean * 1.1);
-            assert!(mean(&s) >= random_mean * 0.9);
-            assert!(variance(&s) <= random_variance * 1.1);
-            assert!(variance(&s) >= random_variance * 0.9);
+            assert!(mean(&s) <= random_mean * 1.2);
+            assert!(mean(&s) >= random_mean * 0.8);
+            assert!(variance(&s) <= random_variance * 1.2);
+            assert!(variance(&s) >= random_variance * 0.8);
             assert!(s.len() as u32 == n);
         }
     }

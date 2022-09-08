@@ -1,22 +1,20 @@
 mod vector;
 mod gaussian;
 mod data;
-//mod loss;
+mod loss;
+mod activation;
 
 fn main() {
-    let mut v: Vec<f32> = vec![1.2, 3.2, 0.0001];
-    let s: f32 = 3.141;
+    println!("{}", f32::ln(1.));
+    let mut y: Vec<f32> = vec![3., 2.2, -5.];
+    let mut h: Vec<f32> = vec![2., -0.5, -1.25];
+    let mut r = loss::cross_entropy_loss(&h, &y); //vector::dot(&y, &vector::logarithm(&h));
+    println!("r: {}", &r);
 
-    println!("v: {:?}", &v);
-    println!("s: {:?}", &s);
-    let mut ln_v = vector::logarithm(&v);
-    println!("ln_v: {:?}", &ln_v);
-    println!("v: {:?}", &v);
-    println!("s: {:?}", &s);
+    let mut d: Vec<f32> = loss::cross_entropy_derivative(&h, &y);
+    println!("d: {:?}", &d);
 
-    let mut scmu = vector::scalar_multiply(&v, &s);
-    println!("scmu: {:?}", &scmu);
-    println!("v: {:?}", &v);
-    println!("s: {:?}", &s);
-
+    let mut m: f32 = -0.;
+    println!("exp(-{}): {}", &m, (-m).exp());
+    println!("sigmoid: {}", activation::sigmoid(-0.1));
 }
