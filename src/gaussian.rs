@@ -25,7 +25,7 @@ impl Gaussian {
         g
     }
 
-    pub fn samples(&mut self, n: u32) -> Vec<f32> {
+    pub fn samples(&mut self, n: usize) -> Vec<f32> {
         let mut numbers: Vec<f32> = Vec::new();
 
         for _ in 0..n {
@@ -44,7 +44,7 @@ mod tests {
     #[test]
     fn gaussian_mean_and_var() {
         let mut rng = thread_rng();
-        let n: u32 = 100000;
+        let n: usize = 100000;
         for _ in 0..10 {
             let random_mean: f32 = 5. * rng.gen::<f32>();
             let random_variance: f32 = 5. * rng.gen::<f32>();
@@ -55,7 +55,7 @@ mod tests {
             assert!(mean(&s) >= random_mean * 0.8);
             assert!(variance(&s) <= random_variance * 1.2);
             assert!(variance(&s) >= random_variance * 0.8);
-            assert!(s.len() as u32 == n);
+            assert!(s.len() as usize == n);
         }
     }
 

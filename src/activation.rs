@@ -9,21 +9,6 @@ pub fn sigmoid_derivative(v: &f32) -> f32 {
     sig * (1. - sig)
 }
 
-pub fn vector_sigmoid(v: &Vec<f32>) -> Vec<f32> {
-    let mut r: Vec<f32> = vec![];
-    for e in v {
-        r.push(sigmoid(e));
-    }
-    return r;
-}
-
-pub fn vector_sigmoid_derivative(v: &Vec<f32>) -> Vec<f32> {
-    let mut r: Vec<f32> = vec![];
-    for e in v {
-        r.push(sigmoid_derivative(e));
-    }
-    return r;
-}
 
 #[cfg(test)]
 mod tests {

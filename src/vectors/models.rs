@@ -18,56 +18,82 @@ impl Vector2D {
         Vector2D::new(self.values.to_vec(), new_shape)    
     }
 
-    pub fn dot(&mut self, b_vector: Vector2D) -> Vector2D {
+    pub fn dot(&mut self, b_vector: &Vector2D) -> Vector2D {
         if self.shape[1] != b_vector.shape[0] {
             panic!("Can not dot multiply vectors with shape {:?} @ {:?}", self.shape, b_vector.shape);
         } else {
-            Vector2D::new(self.values.to_vec(), self.shape)
+            let mut result: Vec<f32> = vec![];
+            let result_shape: [usize; 2] = [self.shape[0], b_vector.shape[1]];
+
+            for row in 0..result_shape[0] {
+                for col in 0..result_shape[1] {
+                    let mut value: f32 = 0.;
+                    for idx in 0..self.shape[1] {
+                        value += self.get_mat_value(row, idx) * b_vector.get_mat_value(idx, col);
+                    }
+                    result.push(value);
+                }
+            }
+            Vector2D::new(result, result_shape)
         }
     }
 
-    pub fn get_value(&self, i: usize) -> Option<&f32> {
-        self.values.get(i)
+    pub fn get_value(&self, i: usize) -> &f32 {
+        if i >= self.values.len() {
+            panic!("Index out of bounds.")
+        } else {
+            &self.values[i]
+        }
     }
 
-    pub fn get_mat_value(&self, i: usize, j: usize) -> Option<&f32> {
-        self.values.get(i * self.shape[1] + j)
+    pub fn get_mat_value(&self, i: usize, j: usize) -> &f32 {
+        if (i >= self.shape[0]) | (j >= self.shape[1]) {
+            panic!("Index out of bounds.")
+        } else {
+            &self.values[i * self.shape[1] + j]
+        }
     }
 
-    pub fn get_value_mut(&mut self, i: usize) -> Option<&mut f32> {
-        self.values.get_mut(i)
+    pub fn get_value_mut(&mut self, i: usize) -> &mut f32 {
+        if i >= self.values.len() {
+            panic!("Index out of bounds.")
+        } else {
+            &mut self.values[i]
+        }
     }
 
-    pub fn get_mat_value_mut(&mut self, i: usize, j: usize) -> Option<&mut f32> {
-        self.values.get_mut(i * self.shape[1] + j)
+    pub fn get_mat_value_mut(&mut self, i: usize, j: usize) -> &mut f32 {
+        if (i >= self.shape[0]) | (j >= self.shape[1]) {
+            panic!("Index out of bounds.")
+        } else {
+            &mut self.values[i * self.shape[1] + j]
+        }
     }
 }
 
 impl std::ops::Index<usize> for Vector2D {
     type Output = f32;
     fn index(&self, i: usize) -> &f32 {
-        self.get_value(i).expect("Index out of bounds.")
+        self.get_value(i)
     }
 }
 
 impl std::ops::Index<(usize, usize)> for Vector2D {
     type Output = f32;
-    fn index(&self, k: (usize, usize)) -> &f32 {
-        let (i, j) = k;
-        self.get_mat_value(i, j).expect("Index out of bounds.")
+    fn index(&self, (i, j): (usize, usize)) -> &f32 {
+        self.get_mat_value(i, j)
     }
 }
 
 impl std::ops::IndexMut<usize> for Vector2D {
     fn index_mut(&mut self, i: usize) -> &mut f32 {
-        self.get_value_mut(i).expect("Index out of bounds.")
+        self.get_value_mut(i)
     }
 }
 
 impl std::ops::IndexMut<(usize, usize)> for Vector2D {
-    fn index_mut(&mut self, k: (usize, usize)) -> &mut f32 {
-        let (i, j) = k;
-        self.get_mat_value_mut(i, j).expect("Index out of bounds.")
+    fn index_mut(&mut self, (i, j): (usize, usize)) -> &mut f32 {
+        self.get_mat_value_mut(i, j)
     }
 }
 
@@ -95,6 +121,37 @@ impl std::ops::Mul<Vector2D> for f32 {
     }
 }
 
+impl std::ops::Add<f32> for Vector2D {
+    type Output = Vector2D;
+
+    fn add(self, _rhs: f32) -> Vector2D {
+        let mut new_values: Vec<f32> = vec![];
+        for value in self.values {
+            new_values.push(value + _rhs);
+        }
+        Vector2D::new(new_values, self.shape)
+    }
+}
+
+impl std::ops::Add<Vector2D> for f32 {
+    type Output = Vector2D;
+
+    fn add(self, rhs: Vector2D) -> Vector2D {
+        let mut new_values: Vec<f32> = vec![];
+        for value in rhs.values {
+            new_values.push(value + self);
+        }
+        Vector2D::new(new_values, rhs.shape)
+    }
+}
+
+impl std::ops::Mul<&Vector2D> for Vector2D {
+    type Output = Vector2D;
+
+    fn mul(mut self, rhs: &Vector2D) -> Vector2D {
+        self.dot(rhs)
+    }
+}
 
 #[cfg(test)]
 mod tests {

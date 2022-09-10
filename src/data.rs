@@ -8,7 +8,7 @@ pub struct XnorDataset {
 }
 
 impl XnorDataset {
-    pub fn new(num_samples: u32) -> XnorDataset {
+    pub fn new(num_samples: usize) -> XnorDataset {
         let mut g_1: Gaussian = Gaussian::new(0., 0.2);
         let mut g_2: Gaussian = Gaussian::new(1., 0.2);
 

@@ -4,15 +4,23 @@ mod data;
 mod loss;
 mod activation;
 mod vectors;
+mod neuralnetwork;
 
+use neuralnetwork::NeuralNetwork;
 use vectors::models::Vector2D;
 
 fn main() {
-    let v: f32 = 1.5;
-    let values: Vec<f32> = vec![0., 1.1, 2.2, 3.3, 4.4, 5.5, 6.6, 7.7];
-    let shape: [usize; 2] = [4, 2];
+    let mut v1: Vector2D = Vector2D::new(vec![1., 2., 3., 4., 5., 6.], [3, 2]);
+    let mut v2: Vector2D = Vector2D::new(vec![1., 0., 1., 0., 1., 0.], [2, 3]);    
 
-    let v2d: Vector2D = Vector2D { values, shape };
-    println!("{}", v2d[5]);
-    println!("{}", v2d[(3, 1)]);
+    println!("v1: {:?}", &v1.values);
+    println!("v2: {:?}", &v2.values);
+
+    let result = v1.dot(&v2);
+
+    println!("v1 * v2: {:?} with shape {:?}", &result.values, &result.shape);
+
+    let x = Vector2D::new(vec![1., 2., 1., 1., 2., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1.], [5, 3]);
+    let nn = NeuralNetwork::new(vec![3, 5, 6, 1]);
+    nn.forward(x);
 }
