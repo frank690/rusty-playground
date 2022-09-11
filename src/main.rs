@@ -21,6 +21,6 @@ fn main() {
     println!("v1 * v2: {:?} with shape {:?}", &result.values, &result.shape);
 
     let x = Vector2D::new(vec![1., 2., 1., 1., 2., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1.], [5, 3]);
-    let nn = NeuralNetwork::new(vec![3, 5, 6, 1]);
-    nn.forward(x);
+    let nn = NeuralNetwork::new(vec![3, 5, 6, 100, 1000, 32, 5, 1]);
+    let h = nn.forward(x);
 }

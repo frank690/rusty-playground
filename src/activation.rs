@@ -1,14 +1,24 @@
 // This file contains activation functions
 
-pub fn sigmoid(v: &f32) -> f32 {
+use crate::vectors::models::Vector2D;
+
+fn solo_sigmoid(v: &f32) -> f32 {
     1. / (1. + (-v).exp())
 }
 
-pub fn sigmoid_derivative(v: &f32) -> f32 {
-    let sig = sigmoid(v);
-    sig * (1. - sig)
+pub fn sigmoid(v: &Vector2D) -> Vector2D {
+    let mut new_values = vec![];
+    for value in &v.values {
+        new_values.push(solo_sigmoid(&value));
+    }
+    Vector2D::new(new_values, v.shape)
 }
 
+pub fn sigmoid_derivative(v: &Vector2D) -> Vector2D {
+    let sig = sigmoid(v);
+    let sag = 1. - &sig;
+    sig * sag
+}
 
 #[cfg(test)]
 mod tests {
@@ -18,21 +28,9 @@ mod tests {
 
     #[test]
     fn test_sigmoid() {
-        assert!(sigmoid(&0.) == 0.5);
-        assert!(sigmoid(&-0.) == 0.5);
-        assert!(sigmoid(&0.00001) > 0.5);
-        assert!(sigmoid(&-0.00001) < 0.5);     
-    }
-
-    #[test]
-    fn test_sigmoid_derivative() {
-        let mut rng = thread_rng();
-        for _ in 0..1000 {
-            let rnd: f32 = 5. * rng.gen::<f32>();
-            assert!(sigmoid_derivative(&rnd) > 0.);
-        }
-
-        assert!(sigmoid_derivative(&1000000.) == 0.);
-        assert!(sigmoid_derivative(&-1000000.) == 0.);
+        assert!(solo_sigmoid(&0.) == 0.5);
+        assert!(solo_sigmoid(&-0.) == 0.5);
+        assert!(solo_sigmoid(&0.00001) > 0.5);
+        assert!(solo_sigmoid(&-0.00001) < 0.5);     
     }
 }

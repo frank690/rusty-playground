@@ -145,6 +145,62 @@ impl std::ops::Add<Vector2D> for f32 {
     }
 }
 
+impl std::ops::Sub<f32> for Vector2D {
+    type Output = Vector2D;
+
+    fn sub(self, _rhs: f32) -> Vector2D {
+        let mut new_values: Vec<f32> = vec![];
+        for value in self.values {
+            new_values.push(value - _rhs);
+        }
+        Vector2D::new(new_values, self.shape)
+    }
+}
+
+impl std::ops::Sub<Vector2D> for f32 {
+    type Output = Vector2D;
+
+    fn sub(self, rhs: Vector2D) -> Vector2D {
+        let mut new_values: Vec<f32> = vec![];
+        for value in rhs.values {
+            new_values.push(value - self);
+        }
+        Vector2D::new(new_values, rhs.shape)
+    }
+}
+
+impl std::ops::Sub<&f32> for Vector2D {
+    type Output = Vector2D;
+
+    fn sub(self, _rhs: &f32) -> Vector2D {
+        let mut new_values: Vec<f32> = vec![];
+        for value in self.values {
+            new_values.push(value - _rhs);
+        }
+        Vector2D::new(new_values, self.shape)
+    }
+}
+
+impl std::ops::Sub<&Vector2D> for f32 {
+    type Output = Vector2D;
+
+    fn sub(self, rhs: &Vector2D) -> Vector2D {
+        let mut new_values: Vec<f32> = vec![];
+        for value in &rhs.values {
+            new_values.push(value - self);
+        }
+        Vector2D::new(new_values, rhs.shape)
+    }
+}
+
+impl std::ops::Mul<Vector2D> for Vector2D {
+    type Output = Vector2D;
+
+    fn mul(mut self, rhs: Vector2D) -> Vector2D {
+        self.dot(&rhs)
+    }
+}
+
 impl std::ops::Mul<&Vector2D> for Vector2D {
     type Output = Vector2D;
 

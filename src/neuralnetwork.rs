@@ -1,11 +1,11 @@
 // This file contains all neural network implementation related functions.
 
-use crate::{vectors::models::Vector2D, gaussian::Gaussian};
+use crate::{vectors::models::Vector2D, gaussian::Gaussian, activation};
 
 pub struct NeuralNetwork {
     pub shape: Vec<usize>,
     pub weights: Vec<Vector2D>,
-    pub biases: Vec<f32>
+    pub biases: Vec<f32>,
 }
 
 fn initialize_weights(shape: &Vec<usize>) -> Vec<Vector2D> {
@@ -36,11 +36,13 @@ impl NeuralNetwork {
     }
 
     pub fn forward(&self, input: Vector2D) -> Vector2D {
-        let mut result = input;
-        for weight in &self.weights {
-            result = result * weight;
+        let mut a = input;
+
+        for (weight, bias) in self.weights.iter().zip(&self.biases) {
+            let z = a * weight + *bias;
+            a = activation::sigmoid(&z);
         }
-        println!("result values: {:?} with shape: {:?}", result.values, result.shape);
-        return result
+        println!("result values: {:?} with shape: {:?}", a.values, a.shape);
+        return a
     }
 }
