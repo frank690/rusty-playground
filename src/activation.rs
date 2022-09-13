@@ -16,7 +16,7 @@ pub fn sigmoid(v: &Vector2D) -> Vector2D {
 
 pub fn sigmoid_derivative(v: &Vector2D) -> Vector2D {
     let sig = sigmoid(v);
-    let sag = 1. - &sig;
+    let sag = 1. as f32 - &sig;
     sig * sag
 }
 
