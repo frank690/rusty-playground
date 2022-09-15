@@ -29,7 +29,12 @@ impl Vector2D {
                 for col in 0..result_shape[1] {
                     let mut value: f32 = 0.;
                     for idx in 0..self.shape[1] {
-                        value += self.get_mat_value(row, idx) * b_vector.get_mat_value(idx, col);
+                        let a = self.get_mat_value(row, idx);
+                        let b = b_vector.get_mat_value(idx, col);
+                        if (*a == 0.) | (*b == 0.) {
+                            continue;
+                        }
+                        value += a * b;
                     }
                     result.push(value);
                 }
@@ -54,19 +59,19 @@ impl Vector2D {
         }
     }
 
-    pub fn get_mat_value(&self, i: usize, j: usize) -> &f32 {
-        if (i >= self.shape[0]) | (j >= self.shape[1]) {
-            panic!("Index out of bounds.")
-        } else {
-            &self.values[i * self.shape[1] + j]
-        }
-    }
-
     pub fn get_value_mut(&mut self, i: usize) -> &mut f32 {
         if i >= self.values.len() {
             panic!("Index out of bounds.")
         } else {
             &mut self.values[i]
+        }
+    }
+
+    pub fn get_mat_value(&self, i: usize, j: usize) -> &f32 {
+        if (i >= self.shape[0]) | (j >= self.shape[1]) {
+            panic!("Index out of bounds.")
+        } else {
+            &self.values[i * self.shape[1] + j]
         }
     }
 
@@ -117,5 +122,54 @@ mod tests {
         let v3 = v1.dot(&v2);
         assert!(v3.values == vec![5., 15.5]);
         assert!(v3.shape == [2, 1]);
+    }
+
+    #[test]
+    fn test_ln() {
+        let values = vec![0., 1., 2., 3., 4., 5.];
+        let shape = [2, 3];
+        let mut v1: Vector2D = Vector2D::new(values, shape);
+        let v2 = v1.ln();
+        assert!(v2.shape == v1.shape);
+        assert!(v2.values[0].is_infinite());
+        assert!(v2.values[1] == 0.);
+    }
+
+    #[test]
+    fn test_get_value() {
+        let values = vec![0., 1., 2., 3., 4., 5.];
+        let shape = [2, 3];
+        let v1: Vector2D = Vector2D::new(values, shape);
+        assert!(v1.values[0] == *v1.get_value(0));
+        assert!(v1.values[4] == *v1.get_value(4));
+    }
+
+    #[test]
+    fn test_get_value_mut() {
+        let values = vec![0., 1., 2., 3., 4., 5.];
+        let shape = [2, 3];
+        let mut v1: Vector2D = Vector2D::new(values, shape);
+        assert!(v1.values[0] == *v1.get_value_mut(0));
+        assert!(v1.values[4] == *v1.get_value_mut(4));
+    }
+
+    #[test]
+    fn test_get_mat_value() {
+        let values = vec![0., 1., 2., 3., 4., 5.];
+        let shape = [2, 3];
+        let v1: Vector2D = Vector2D::new(values, shape);
+        assert!(v1.values[0] == *v1.get_mat_value(0, 0));
+        assert!(v1.values[3] == *v1.get_mat_value(1, 0));
+        assert!(v1.values[5] == *v1.get_mat_value(1, 2));
+    }
+
+    #[test]
+    fn test_get_mat_value_mut() {
+        let values = vec![0., 1., 2., 3., 4., 5.];
+        let shape = [2, 3];
+        let mut v1: Vector2D = Vector2D::new(values, shape);
+        assert!(v1.values[0] == *v1.get_mat_value_mut(0, 0));
+        assert!(v1.values[3] == *v1.get_mat_value_mut(1, 0));
+        assert!(v1.values[5] == *v1.get_mat_value_mut(1, 2));
     }
 }

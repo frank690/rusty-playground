@@ -28,24 +28,48 @@ impl std::ops::IndexMut<(usize, usize)> for Vector2D {
     }
 }
 
-impl std::ops::Mul<f32> for Vector2D {
-    type Output = Vector2D;
-
-    fn mul(self, _rhs: f32) -> Vector2D {
-        let mut new_values: Vec<f32> = vec![];
-        for value in self.values {
-            new_values.push(value * _rhs);
-        }
-        Vector2D::new(new_values, self.shape)
-    }
-}
-
 impl std::ops::Mul<Vector2D> for f32 {
     type Output = Vector2D;
 
     fn mul(self, rhs: Vector2D) -> Vector2D {
         let mut new_values: Vec<f32> = vec![];
         for value in rhs.values {
+            new_values.push(value * self);
+        }
+        Vector2D::new(new_values, rhs.shape)
+    }
+}
+
+impl std::ops::Mul<&Vector2D> for f32 {
+    type Output = Vector2D;
+
+    fn mul(self, rhs: &Vector2D) -> Vector2D {
+        let mut new_values: Vec<f32> = vec![];
+        for value in &rhs.values {
+            new_values.push(value * self);
+        }
+        Vector2D::new(new_values, rhs.shape)
+    }
+}
+
+impl std::ops::Mul<Vector2D> for &f32 {
+    type Output = Vector2D;
+
+    fn mul(self, rhs: Vector2D) -> Vector2D {
+        let mut new_values: Vec<f32> = vec![];
+        for value in rhs.values {
+            new_values.push(value * self);
+        }
+        Vector2D::new(new_values, rhs.shape)
+    }
+}
+
+impl std::ops::Mul<&Vector2D> for &f32 {
+    type Output = Vector2D;
+
+    fn mul(self, rhs: &Vector2D) -> Vector2D {
+        let mut new_values: Vec<f32> = vec![];
+        for value in &rhs.values {
             new_values.push(value * self);
         }
         Vector2D::new(new_values, rhs.shape)
@@ -64,15 +88,39 @@ impl std::ops::Mul<f32> for &Vector2D {
     }
 }
 
-impl std::ops::Mul<&Vector2D> for f32 {
+impl std::ops::Mul<f32> for Vector2D {
     type Output = Vector2D;
 
-    fn mul(self, rhs: &Vector2D) -> Vector2D {
+    fn mul(self, _rhs: f32) -> Vector2D {
         let mut new_values: Vec<f32> = vec![];
-        for value in &rhs.values {
-            new_values.push(value * self);
+        for value in self.values {
+            new_values.push(value * _rhs);
         }
-        Vector2D::new(new_values, rhs.shape)
+        Vector2D::new(new_values, self.shape)
+    }
+}
+
+impl std::ops::Mul<&f32> for &Vector2D {
+    type Output = Vector2D;
+
+    fn mul(self, _rhs: &f32) -> Vector2D {
+        let mut new_values: Vec<f32> = vec![];
+        for value in &self.values {
+            new_values.push(value * _rhs);
+        }
+        Vector2D::new(new_values, self.shape)
+    }
+}
+
+impl std::ops::Mul<&f32> for Vector2D {
+    type Output = Vector2D;
+
+    fn mul(self, _rhs: &f32) -> Vector2D {
+        let mut new_values: Vec<f32> = vec![];
+        for value in self.values {
+            new_values.push(value * _rhs);
+        }
+        Vector2D::new(new_values, self.shape)
     }
 }
 
@@ -166,17 +214,6 @@ impl std::ops::Sub<f32> for Vector2D {
     }
 }
 
-impl std::ops::Sub<Vector2D> for f32 {
-    type Output = Vector2D;
-
-    fn sub(self, rhs: Vector2D) -> Vector2D {
-        let mut new_values: Vec<f32> = vec![];
-        for value in rhs.values {
-            new_values.push(value - self);
-        }
-        Vector2D::new(new_values, rhs.shape)
-    }
-}
 
 impl std::ops::Sub<&f32> for Vector2D {
     type Output = Vector2D;
@@ -202,18 +239,6 @@ impl std::ops::Sub<&f32> for &Vector2D {
     }
 }
 
-impl std::ops::Sub<&Vector2D> for f32 {
-    type Output = Vector2D;
-
-    fn sub(self, rhs: &Vector2D) -> Vector2D {
-        let mut new_values: Vec<f32> = vec![];
-        for value in &rhs.values {
-            new_values.push(value - self);
-        }
-        Vector2D::new(new_values, rhs.shape)
-    }
-}
-
 impl std::ops::Sub<f32> for &Vector2D {
     type Output = Vector2D;
 
@@ -226,13 +251,49 @@ impl std::ops::Sub<f32> for &Vector2D {
     }
 }
 
+impl std::ops::Sub<Vector2D> for f32 {
+    type Output = Vector2D;
+
+    fn sub(self, rhs: Vector2D) -> Vector2D {
+        let mut new_values: Vec<f32> = vec![];
+        for value in rhs.values {
+            new_values.push(self - value);
+        }
+        Vector2D::new(new_values, rhs.shape)
+    }
+}
+
+impl std::ops::Sub<&Vector2D> for f32 {
+    type Output = Vector2D;
+
+    fn sub(self, rhs: &Vector2D) -> Vector2D {
+        let mut new_values: Vec<f32> = vec![];
+        for value in &rhs.values {
+            new_values.push(self - value);
+        }
+        Vector2D::new(new_values, rhs.shape)
+    }
+}
+
 impl std::ops::Sub<Vector2D> for &f32 {
     type Output = Vector2D;
 
     fn sub(self, rhs: Vector2D) -> Vector2D {
         let mut new_values: Vec<f32> = vec![];
         for value in &rhs.values {
-            new_values.push(value - self);
+            new_values.push(self - value);
+        }
+        Vector2D::new(new_values, rhs.shape)
+    }
+}
+
+impl std::ops::Sub<&Vector2D> for &f32 {
+    type Output = Vector2D;
+
+    fn sub(self, rhs: &Vector2D) -> Vector2D {
+        let mut new_values: Vec<f32> = vec![];
+        for value in &rhs.values {
+            new_values.push(self - value);
         }
         Vector2D::new(new_values, rhs.shape)
     }
@@ -241,16 +302,60 @@ impl std::ops::Sub<Vector2D> for &f32 {
 impl std::ops::Mul<Vector2D> for Vector2D {
     type Output = Vector2D;
 
-    fn mul(mut self, rhs: Vector2D) -> Vector2D {
-        self.dot(&rhs)
+    fn mul(self, rhs: Vector2D) -> Vector2D {
+        if self.shape != rhs.shape {
+            panic!("Can not do elementwise multiplication if the Vector2D's do not have the same shape.")
+        }
+        let mut new_values: Vec<f32> = vec![];
+        for (v1, v2) in self.values.iter().zip(rhs.values.iter()) {
+            new_values.push(v1 * v2);
+        }
+        Vector2D::new(new_values, self.shape)
     }
 }
 
 impl std::ops::Mul<&Vector2D> for Vector2D {
     type Output = Vector2D;
 
-    fn mul(mut self, rhs: &Vector2D) -> Vector2D {
-        self.dot(rhs)
+    fn mul(self, rhs: &Vector2D) -> Vector2D {
+        if self.shape != rhs.shape {
+            panic!("Can not do elementwise multiplication if the Vector2D's do not have the same shape.")
+        }
+        let mut new_values: Vec<f32> = vec![];
+        for (v1, v2) in self.values.iter().zip(rhs.values.iter()) {
+            new_values.push(v1 * v2);
+        }
+        Vector2D::new(new_values, self.shape)
+    }
+}
+
+impl std::ops::Div<Vector2D> for Vector2D {
+    type Output = Vector2D;
+
+    fn div(self, rhs: Vector2D) -> Vector2D {
+        if self.shape != rhs.shape {
+            panic!("Can not do elementwise division if the Vector2D's do not have the same shape.")
+        }
+        let mut new_values: Vec<f32> = vec![];
+        for (v1, v2) in self.values.iter().zip(rhs.values.iter()) {
+            new_values.push(v1 / v2);
+        }
+        Vector2D::new(new_values, self.shape)
+    }
+}
+
+impl std::ops::Div<&Vector2D> for &Vector2D {
+    type Output = Vector2D;
+
+    fn div(self, rhs: &Vector2D) -> Vector2D {
+        if self.shape != rhs.shape {
+            panic!("Can not do elementwise division if the Vector2D's do not have the same shape.")
+        }
+        let mut new_values: Vec<f32> = vec![];
+        for (v1, v2) in self.values.iter().zip(rhs.values.iter()) {
+            new_values.push(v1 / v2);
+        }
+        Vector2D::new(new_values, self.shape)
     }
 }
 
@@ -270,6 +375,18 @@ impl std::ops::Neg for Vector2D {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    // https://stackoverflow.com/questions/40767815/how-do-i-check-whether-a-vector-is-equal-to-another-vector-that-contains-nan-and/40768104#40768104
+    fn eq_with_nan_eq(a: f32, b: f32) -> bool {
+        (a.is_nan() && b.is_nan()) || (a == b)
+    }
+    
+    fn vec_compare(va: &[f32], vb: &[f32]) -> bool {
+        (va.len() == vb.len()) &&
+         va.iter()
+           .zip(vb)
+           .all(|(a,b)| eq_with_nan_eq(*a,*b))
+    }
 
     #[test]
     fn test_indexing() {
@@ -315,5 +432,18 @@ mod tests {
         assert!(&result.values == &expected_result);
         let v2d: Vector2D = (1./v) * result;
         assert!(&v2d.values == values_copy);
+    }
+
+    #[test]
+    fn test_subtraction() {
+        let f: f32 = 3.;
+        let values: Vec<f32> = vec![0., 1.5, 3., 4.5];
+        let shape: [usize; 2] = [2, 2];
+        let v2d: Vector2D = Vector2D::new(values, shape);
+        assert!(vec_compare(&(v2d - f).values, &vec![-3., -1.5, 0., 1.5]));
+
+        let values: Vec<f32> = vec![0., 1.5, 3., 4.5];
+        let v2d: Vector2D = Vector2D::new(values, shape);
+        assert!(vec_compare(&(f - v2d).values, &vec![3., 1.5, 0., -1.5]));
     }
 }
