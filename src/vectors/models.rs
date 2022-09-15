@@ -1,5 +1,6 @@
 // This file contains all implementation of custom vector models (structs)
 
+#[derive(Clone)]
 pub struct Vector2D {
     pub values: Vec<f32>,
     pub shape: [usize; 2]
