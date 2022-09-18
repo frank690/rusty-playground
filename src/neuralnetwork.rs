@@ -1,6 +1,6 @@
 // This file contains all neural network implementation related functions.
 
-use crate::{vectors::models::Vector2D, gaussian::Gaussian, activation, loss};
+use crate::{vectors::models::Vector2D, gaussian::Gaussian, activation::{self, sigmoid_derivative}, loss};
 
 fn initialize_weights(shape: &Vec<usize>) -> Vec<Vector2D> {
     let mut g: Gaussian = Gaussian::new(0., 1.);
@@ -23,6 +23,7 @@ fn initialize_biases(shape: &Vec<usize>) -> Vec<f32> {
 }
 
 pub struct NeuralNetworkGradients {
+    pub layers: usize,
     pub z: Vec<Vector2D>,
     pub a: Vec<Vector2D>,
     pub dz: Vec<Vector2D>,
@@ -30,8 +31,14 @@ pub struct NeuralNetworkGradients {
 }
 
 impl NeuralNetworkGradients {
-    pub fn new() -> NeuralNetworkGradients {
-        NeuralNetworkGradients { z: vec![], a: vec![], dz: vec![], da: vec![] }
+    pub fn new(layers: usize) -> NeuralNetworkGradients {
+        NeuralNetworkGradients { 
+            layers, 
+            z: vec![Vector2D::default(); layers], 
+            a: vec![Vector2D::default(); layers], 
+            dz: vec![Vector2D::default(); layers], 
+            da: vec![Vector2D::default(); layers]
+        }
     }
 
     pub fn h(&self) -> Vector2D {
@@ -43,6 +50,7 @@ pub struct NeuralNetwork {
     pub shape: Vec<usize>,
     pub weights: Vec<Vector2D>,
     pub biases: Vec<f32>,
+    learning_rate: f32,
     internal: NeuralNetworkGradients,
 }
 
@@ -50,23 +58,26 @@ impl NeuralNetwork {
     pub fn new(shape: Vec<usize>) -> NeuralNetwork {
         let weights = initialize_weights(&shape);
         let biases = initialize_biases(&shape);
-        let internal = NeuralNetworkGradients::new();
-        NeuralNetwork { shape, weights, biases, internal }
+        let internal = NeuralNetworkGradients::new(shape.len()-1);
+        let learning_rate = 1.;
+        NeuralNetwork { shape, weights, biases, internal, learning_rate }
     }
 
     pub fn forward(&mut self, input: Vector2D) -> Vector2D {
-        self.internal.a.push(input);
+        self.internal.a[0] = input;
 
-        for layer in 0..self.shape.len()-1 {
-            self.internal.z.push(&self.internal.a[layer].dot(&self.weights[layer]) + &self.biases[layer]);
-            self.internal.a.push(activation::sigmoid(&self.internal.z[layer]));
+        for layer in 0..self.internal.layers-1 {
+            self.internal.z[layer] = &self.internal.a[layer].dot(&self.weights[layer]) + &self.biases[layer];
+            self.internal.a[layer+1] = activation::sigmoid(&self.internal.z[layer]);
         }
         println!("result values: {:?} with shape: {:?}", self.internal.h().values, self.internal.h().shape);
         return self.internal.h()
     }
 
     pub fn backward(&mut self, true_output: Vector2D) {
-        self.internal.da.push(loss::cross_entropy_derivative(self.internal.h(), true_output));
-        println!("backward da: {:?}", self.internal.da[0].values);
+        self.internal.da[self.internal.layers-1] = loss::cross_entropy_derivative(self.internal.h(), true_output);
+        for layer in self.internal.layers-1..-1 {
+            self.internal.dz[layer] = self.internal.da[layer] * sigmoid_derivative(&self.internal.z[layer]);
+        }
     }
 }

@@ -22,8 +22,6 @@ pub fn sigmoid_derivative(v: &Vector2D) -> Vector2D {
 
 #[cfg(test)]
 mod tests {
-    use rand::{thread_rng, Rng};
-
     use super::*;
 
     #[test]

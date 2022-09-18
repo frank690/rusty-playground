@@ -2,6 +2,12 @@
 
 use super::models::Vector2D;
 
+impl Default for Vector2D {
+    fn default() -> Self {
+        Vector2D::new(vec![], [0, 0])
+    }
+}
+
 impl std::ops::Index<usize> for Vector2D {
     type Output = f32;
     fn index(&self, i: usize) -> &f32 {
