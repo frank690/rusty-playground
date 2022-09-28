@@ -130,6 +130,104 @@ impl std::ops::Mul<&f32> for Vector2D {
     }
 }
 
+
+impl std::ops::Div<Vector2D> for f32 {
+    type Output = Vector2D;
+
+    fn div(self, rhs: Vector2D) -> Vector2D {
+        let mut new_values: Vec<f32> = vec![];
+        for value in rhs.values {
+            new_values.push(value / self);
+        }
+        Vector2D::new(new_values, rhs.shape)
+    }
+}
+
+impl std::ops::Div<&Vector2D> for f32 {
+    type Output = Vector2D;
+
+    fn div(self, rhs: &Vector2D) -> Vector2D {
+        let mut new_values: Vec<f32> = vec![];
+        for value in &rhs.values {
+            new_values.push(value / self);
+        }
+        Vector2D::new(new_values, rhs.shape)
+    }
+}
+
+impl std::ops::Div<Vector2D> for &f32 {
+    type Output = Vector2D;
+
+    fn div(self, rhs: Vector2D) -> Vector2D {
+        let mut new_values: Vec<f32> = vec![];
+        for value in rhs.values {
+            new_values.push(value / self);
+        }
+        Vector2D::new(new_values, rhs.shape)
+    }
+}
+
+impl std::ops::Div<&Vector2D> for &f32 {
+    type Output = Vector2D;
+
+    fn div(self, rhs: &Vector2D) -> Vector2D {
+        let mut new_values: Vec<f32> = vec![];
+        for value in &rhs.values {
+            new_values.push(value / self);
+        }
+        Vector2D::new(new_values, rhs.shape)
+    }
+}
+
+impl std::ops::Div<f32> for &Vector2D {
+    type Output = Vector2D;
+
+    fn div(self, _rhs: f32) -> Vector2D {
+        let mut new_values: Vec<f32> = vec![];
+        for value in &self.values {
+            new_values.push(value / _rhs);
+        }
+        Vector2D::new(new_values, self.shape)
+    }
+}
+
+impl std::ops::Div<f32> for Vector2D {
+    type Output = Vector2D;
+
+    fn div(self, _rhs: f32) -> Vector2D {
+        let mut new_values: Vec<f32> = vec![];
+        for value in self.values {
+            new_values.push(value / _rhs);
+        }
+        Vector2D::new(new_values, self.shape)
+    }
+}
+
+impl std::ops::Div<&f32> for &Vector2D {
+    type Output = Vector2D;
+
+    fn div(self, _rhs: &f32) -> Vector2D {
+        let mut new_values: Vec<f32> = vec![];
+        for value in &self.values {
+            new_values.push(value / _rhs);
+        }
+        Vector2D::new(new_values, self.shape)
+    }
+}
+
+impl std::ops::Div<&f32> for Vector2D {
+    type Output = Vector2D;
+
+    fn div(self, _rhs: &f32) -> Vector2D {
+        let mut new_values: Vec<f32> = vec![];
+        for value in self.values {
+            new_values.push(value / _rhs);
+        }
+        Vector2D::new(new_values, self.shape)
+    }
+}
+
+
 impl std::ops::Add<f32> for Vector2D {
     type Output = Vector2D;
 

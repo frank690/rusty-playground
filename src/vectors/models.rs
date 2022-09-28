@@ -14,6 +14,10 @@ impl Vector2D {
         Vector2D { values, shape }
     }
 
+    pub fn len(self) -> usize {
+        self.values.len()
+    }
+
     pub fn transpose(&mut self) -> Vector2D {
         let new_shape: [usize; 2] = [self.shape[1], self.shape[0]];
         Vector2D::new(self.values.to_vec(), new_shape)    
@@ -50,6 +54,41 @@ impl Vector2D {
             log_values.push(f32::ln(*v));
         }
         Vector2D::new(log_values, self.shape)
+    }
+
+    pub fn mean(&mut self, axis: usize) -> Vector2D {
+        let mut new_shape: [usize; 2] = self.shape.clone();
+        let mut new_values: Vec<f32> = vec![];
+
+        if axis == 0 {
+            for column in 0..self.shape[1] {
+                let mut value: f32 = 0.;
+                for row in 0..self.shape[0] {
+                    value += self.get_mat_value(row, column);
+                    println!("value={}", value);
+                }
+                new_values.push(value / self.shape[0] as f32);
+            }
+            new_shape[0] = 1;
+        } else if axis == 1 {
+            for row in 0..self.shape[0] {
+                let mut value: f32 = 0.;
+                for column in 0..self.shape[1] {
+                    value += self.get_mat_value(row, column);
+                }
+                new_values.push(value / self.shape[1] as f32);
+            }
+            new_shape[1] = 1;
+        } else {
+            panic!("Vector2D only has 2 axis (0 or 1) to compute mean over. Given axis {} does not exist", axis);
+        }
+        Vector2D::new(new_values, new_shape)
+    }
+
+    pub fn overall_mean(&mut self) -> f32 {
+        let mut mean_0: Vector2D = self.mean(0);
+        let mean_01: Vector2D = mean_0.mean(1);
+        return *mean_01.get_value(0);        
     }
 
     pub fn get_value(&self, i: usize) -> &f32 {
@@ -134,6 +173,31 @@ mod tests {
         assert!(v2.shape == v1.shape);
         assert!(v2.values[0].is_infinite());
         assert!(v2.values[1] == 0.);
+    }
+
+    #[test]
+    fn test_mean() {
+        let values = vec![0., 1., 2., 3., 4., 5.];
+        let shape = [2, 3];
+        let mut v1: Vector2D = Vector2D::new(values, shape);
+
+        let mean_0 = v1.mean(0).values;
+        assert!(mean_0.len() == shape[1]);
+        assert!(mean_0 == vec![1.5, 2.5, 3.5]);
+
+        let mean_1 = v1.mean(1).values;
+        assert!(mean_1.len() == shape[0]);
+        assert!(mean_1 == vec![1., 4.]);
+    }
+
+    #[test]
+    fn test_overall_mean() {
+        let values = vec![0., 1., 2., 3., 4., 5.];
+        let shape = [2, 3];
+        let mut v1: Vector2D = Vector2D::new(values, shape);
+
+        let overall_mean = v1.overall_mean();
+        assert!(overall_mean == 2.5);
     }
 
     #[test]
