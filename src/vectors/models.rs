@@ -65,7 +65,6 @@ impl Vector2D {
                 let mut value: f32 = 0.;
                 for row in 0..self.shape[0] {
                     value += self.get_mat_value(row, column);
-                    println!("value={}", value);
                 }
                 new_values.push(value / self.shape[0] as f32);
             }

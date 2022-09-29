@@ -53,7 +53,7 @@ pub struct HyperParameters {
 
 impl HyperParameters {
     pub fn new(shape: Vec<usize>, learning_rate: f32) -> HyperParameters {
-        let layers: usize = shape.len() - 1;
+        let layers: usize = shape.len();
         HyperParameters { shape, learning_rate, layers }
     }
 }
@@ -68,10 +68,10 @@ pub struct Gradients {
 impl Gradients {
     pub fn new(layers: usize) -> Gradients {
         Gradients { 
-            z: vec![Vector2D::default(); layers], 
+            z: vec![Vector2D::default(); layers-1], 
             a: vec![Vector2D::default(); layers],
-            weights: vec![Vector2D::default(); layers],
-            biases: vec![0.; layers],
+            weights: vec![Vector2D::default(); layers-1],
+            biases: vec![0.; layers-1],
         }
     }
 }
@@ -97,6 +97,14 @@ impl NeuralNetwork {
     }
 
     pub fn forward(&mut self, input: Vector2D) -> Vector2D {
+        for w in &self.parameters.weights {
+            println!("w shape: {:?}", w.shape);
+        }
+
+        for b in &self.parameters.biases {
+            println!("b shape: {:?}", b);
+        }
+
         self.parameters.a[0] = input;
         println!("input shape a[0]={:?}", self.parameters.a[0].shape);
         for layer in 0..self.hyperparameters.layers-1 {
@@ -111,12 +119,23 @@ impl NeuralNetwork {
 
     pub fn backward(&mut self, true_output: Vector2D) {
         self.gradients.a[self.hyperparameters.layers-1] = loss::cross_entropy_derivative(self.parameters.h(), true_output);
-        for layer in (0..self.hyperparameters.layers).rev() {
-            self.gradients.z[layer] = &self.gradients.a[layer] * sigmoid_derivative(&self.parameters.z[layer]);
-            self.gradients.a[layer-1] = self.gradients.z[layer].dot(&self.parameters.weights[layer].transpose());
+        for layer in (0..self.hyperparameters.layers-1).rev() {
+            println!("backward layer: {layer}");
+            self.gradients.z[layer] = &self.gradients.a[layer+1] * sigmoid_derivative(&self.parameters.z[layer]);
+            self.gradients.a[layer] = self.gradients.z[layer].dot(&self.parameters.weights[layer].transpose());
+            
+            println!("dz[{}].shape = {:?}", layer, self.gradients.z[layer].shape);
+            println!("da[{}].shape = {:?}", layer, self.gradients.a[layer].shape);
 
             self.gradients.biases[layer] = self.gradients.z[layer].overall_mean();
-            self.gradients.weights[layer] = self.parameters.a[layer-1].transpose().dot(&self.gradients.z[layer]) / self.parameters.h().len() as f32;
+            self.gradients.weights[layer] = self.parameters.a[layer].transpose().dot(&self.gradients.z[layer]) / self.parameters.h().len() as f32;
+        }
+    }
+
+    pub fn update(&mut self) {
+        for layer in 0..self.hyperparameters.layers-1 {
+            self.parameters.weights[layer] = &self.parameters.weights[layer] - self.hyperparameters.learning_rate * &self.gradients.weights[layer];
+            self.parameters.biases[layer] = &self.parameters.biases[layer] - self.hyperparameters.learning_rate * &self.gradients.biases[layer];
         }
     }
 }

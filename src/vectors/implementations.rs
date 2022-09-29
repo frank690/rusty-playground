@@ -330,6 +330,51 @@ impl std::ops::Sub<Vector2D> for Vector2D {
     }
 }
 
+impl std::ops::Sub<&Vector2D> for Vector2D {
+    type Output = Vector2D;
+
+    fn sub(self, rhs: &Vector2D) -> Vector2D {
+        let mut new_values: Vec<f32> = vec![];
+        if self.shape != rhs.shape {
+            panic!("Can not subtract an Vector2D to another Vector2D of different shape.")
+        }
+        for (v1, v2) in self.values.iter().zip(rhs.values.iter()) {
+            new_values.push(v1 - v2);
+        }
+        Vector2D::new(new_values, rhs.shape)
+    }
+}
+
+impl std::ops::Sub<Vector2D> for &Vector2D {
+    type Output = Vector2D;
+
+    fn sub(self, rhs: Vector2D) -> Vector2D {
+        let mut new_values: Vec<f32> = vec![];
+        if self.shape != rhs.shape {
+            panic!("Can not subtract an Vector2D to another Vector2D of different shape.")
+        }
+        for (v1, v2) in self.values.iter().zip(rhs.values.iter()) {
+            new_values.push(v1 - v2);
+        }
+        Vector2D::new(new_values, rhs.shape)
+    }
+}
+
+impl std::ops::Sub<&Vector2D> for &Vector2D {
+    type Output = Vector2D;
+
+    fn sub(self, rhs: &Vector2D) -> Vector2D {
+        let mut new_values: Vec<f32> = vec![];
+        if self.shape != rhs.shape {
+            panic!("Can not subtract an Vector2D to another Vector2D of different shape.")
+        }
+        for (v1, v2) in self.values.iter().zip(rhs.values.iter()) {
+            new_values.push(v1 - v2);
+        }
+        Vector2D::new(new_values, rhs.shape)
+    }
+}
+
 impl std::ops::Sub<f32> for Vector2D {
     type Output = Vector2D;
 
