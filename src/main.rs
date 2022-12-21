@@ -5,18 +5,22 @@ mod activation;
 mod vectors;
 mod neuralnetwork;
 
+use data::XnorDataset;
 use neuralnetwork::NeuralNetwork;
-use vectors::models::Vector2D;
-use std::env;
 
-fn main() {
-    env::set_var("RUST_BACKTRACE", "1");
-    
-    let x = Vector2D::new(vec![1., 2., 1., 1., 2., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1.], [5, 3]);
-    let y = Vector2D::new(vec![1., 0., 1., 1., 0.,], [5, 1]);
 
-    let mut nn = NeuralNetwork::new(vec![3, 10, 7, 1]);
-    let h = nn.forward(x);
-    nn.backward(y);
-    nn.update();
+fn main() {  
+    let data: XnorDataset = XnorDataset::new(200);
+    data.print(5);  // print some samples
+    let mut nn = NeuralNetwork::new(vec![2, 3, 1]);
+    nn.training(data.x, data.y, 1000, false);  // set verbose true to see training loss
+
+    println!("\n---------------- Post-training parameters ----------------");
+    for n in 0..nn.parameters.weights.len() {
+        println!("\nWeights[{}]: ", n);
+        nn.parameters.weights[n].print();
+
+        println!("\nBias[{}]: ", n); 
+        nn.parameters.biases[n].print();
+    }
 }

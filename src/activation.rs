@@ -2,7 +2,7 @@
 
 use crate::vectors::models::Vector2D;
 
-fn solo_sigmoid(v: &f32) -> f32 {
+fn solo_sigmoid(v: &f64) -> f64 {
     1. / (1. + (-v).exp())
 }
 
@@ -16,7 +16,7 @@ pub fn sigmoid(v: &Vector2D) -> Vector2D {
 
 pub fn sigmoid_derivative(v: &Vector2D) -> Vector2D {
     let sig = sigmoid(v);
-    let sag = 1. as f32 - &sig;
+    let sag = 1. as f64 - &sig;
     sig * sag
 }
 

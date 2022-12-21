@@ -1,10 +1,9 @@
 // This file contains functions to generate data that will be used as input for the neural network
-use crate::gaussian::Gaussian;
+use crate::{gaussian::Gaussian, vectors::models::Vector2D};
 
 pub struct XnorDataset {
-    x1: Vec<f32>,
-    x2: Vec<f32>,
-    y: Vec<bool>,
+    pub x: Vector2D,
+    pub y: Vector2D,
 }
 
 impl XnorDataset {
@@ -12,26 +11,35 @@ impl XnorDataset {
         let mut g_1: Gaussian = Gaussian::new(0., 0.2);
         let mut g_2: Gaussian = Gaussian::new(1., 0.2);
 
-        let mut x1: Vec<f32> = Vec::new();
-        let mut x2: Vec<f32> = Vec::new();
-        let mut y: Vec<bool> = Vec::new();
+        let mut x_values: Vec<f64> = Vec::new();
+        let mut y_values: Vec<f64> = Vec::new();
 
-        x1.append(&mut g_1.samples(num_samples/4));
-        x2.append(&mut g_1.samples(num_samples/4));
-        y.append(&mut vec![true; (num_samples/4) as usize]);
+        x_values.append(&mut g_1.samples(num_samples/2));
+        x_values.append(&mut g_2.samples(num_samples/2));
+        x_values.append(&mut g_1.samples(num_samples/4));
+        x_values.append(&mut g_2.samples(num_samples/4));
+        x_values.append(&mut g_1.samples(num_samples/4));
+        x_values.append(&mut g_2.samples(num_samples/4));
 
-        x1.append(&mut g_1.samples(num_samples/4));
-        x2.append(&mut g_2.samples(num_samples/4));
-        y.append(&mut vec![false; (num_samples/4) as usize]);
+        y_values.append(&mut vec![1.; num_samples/4]);
+        y_values.append(&mut vec![0.; num_samples/2]);
+        y_values.append(&mut vec![1.; num_samples/4]);
 
-        x1.append(&mut g_2.samples(num_samples/4));
-        x2.append(&mut g_1.samples(num_samples/4));
-        y.append(&mut vec![false; (num_samples/4) as usize]);
+        let x: Vector2D = Vector2D::new(x_values, [2, num_samples]).transpose();
+        let y: Vector2D = Vector2D::new(y_values, [num_samples, 1]);
 
-        x1.append(&mut g_2.samples(num_samples/4));
-        x2.append(&mut g_2.samples(num_samples/4));
-        y.append(&mut vec![true; (num_samples/4) as usize]);
+        XnorDataset { x, y } 
+    }
 
-        XnorDataset { x1: x1, x2: x2, y: y } 
+    pub fn print(&self, num_samples: usize) {
+        println!("x= ");
+        for idx in 0..num_samples {
+            println!("[{}, {}],", &self.x[2*idx], &self.x[2*idx+1],);
+        }
+
+        println!("y= ");
+        for idx in 0..num_samples {
+            println!("[{}],", &self.y[idx],);
+        }
     }
 }
