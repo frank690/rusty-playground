@@ -172,7 +172,7 @@ mod tests {
         let values = vec![0., 1., 2., 3., 4., 5.];
         let shape = [2, 3];
         let v1: Vector2D = Vector2D::new(values, shape);
-        let v2 = v1.get_mat_row_values(2);
+        v1.get_mat_row_values(2);
     }
 
 }
